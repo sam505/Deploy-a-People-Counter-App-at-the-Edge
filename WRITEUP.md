@@ -67,9 +67,9 @@ python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model 
 
 
   - The model was insufficient for the app because...
-Accuracy of the model was low when detecting a person in a frame
+	Accuracy of the model was low when detecting a person in a frame
   - I tried to improve the model for the app by...
-Lowered the value of the probability threshold but ended up detecting multiple objects that were not persons in one frame.
+	Lowered the value of the probability threshold but ended up detecting multiple objects that were not persons in one frame.
   
 - ### Model 2: 
 ```
@@ -94,10 +94,10 @@ python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model 
 ```
 
   - The model was insufficient for the app because...
-1. Network has 2 inputs overall
+  	- Network has 2 inputs overall
 
   - I tried to improve the model for the app by...
-1. Co..
+  	- Co..
 
 - ### Model 3:
 ```
@@ -150,9 +150,9 @@ python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model 
 ```
 
   - The model was insufficient for the app because...
-1. No accurate detections were made using the model
-2. Detected not satisfied dependencies:
-	protobuf: installed: 3.7.1, required: == 3.6.1
+  	- No accurate detections were made using the model
+	- Detected not satisfied dependencies:
+	- protobuf: installed: 3.7.1, required: == 3.6.1
 
   - I tried to improve the model for the app by...
 
