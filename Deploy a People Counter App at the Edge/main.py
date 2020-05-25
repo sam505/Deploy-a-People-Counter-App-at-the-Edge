@@ -19,7 +19,6 @@
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-
 import os
 import sys
 import time
@@ -64,15 +63,31 @@ def build_argparser():
                              "specified (CPU by default)")
     parser.add_argument("-pt", "--prob_threshold", type=float, default=0.5,
                         help="Probability threshold for detections filtering"
-                        "(0.5 by default)")
+                             "(0.5 by default)")
     return parser
 
 
 def connect_mqtt():
     ### TODO: Connect to the MQTT client ###
-    client = None
+    client = mqtt.Client()
+    client.connect(MQTT_HOST, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
 
     return client
+
+
+# prints information about model layers
+def performance_counts(perf_count):
+    # perf_count is a dictionary containing the
+    # status of the model status
+    print("{:<70} {:<15} {:<15} {:<15} {:<10}".format('name', 'layer_type',
+                                                      'exec_type', 'status',
+                                                      'real_time, us'))
+    for layer, stats in perf_count.items():
+        print("{:<70} {:<15} {:<15} {:<15} {:<10}".format(layer,
+                                                          stats['layer_type'],
+                                                          stats['exec_type'],
+                                                          stats['status'],
+                                                          stats['real_time']))
 
 
 def infer_on_stream(args, client):
@@ -86,35 +101,160 @@ def infer_on_stream(args, client):
     """
     # Initialise the class
     infer_network = Network()
+
     # Set Probability threshold for detections
-    prob_threshold = args.prob_threshold
-
+    # prob_threshold = args.prob_threshold
+    cur_request_id = 0
+    last_count = 0
+    total_count = 0
+    start_time = 0
+    time_on_video = 0
+    time_not_on_video = 0
+    image_mode = False
+    positive_count = 0
     ### TODO: Load the model through `infer_network` ###
-
+    n, c, h, w = infer_network.load_model(args.model, args.device, 1, 1,
+                                          cur_request_id, args.cpu_extension)[1]
     ### TODO: Handle the input stream ###
+    # Checks for image input
+    if args.input.endswith('.jpg') or args.input.endswith('.png') or \
+            args.input.endswith('.bmp'):
+        image_mode = True
+        media_stream = args.input
+
+    # Checks for webcam input
+    elif args.input == 'CAM':
+        media_stream = 0
+
+    # Check for video input
+    else:
+        media_stream = args.input
+        assert os.path.isfile(args.input)
 
     ### TODO: Loop until stream is over ###
+    capture = cv2.VideoCapture(media_stream)
+
+    if media_stream:
+        capture.open(args.input)
+
+    if not capture.isOpened():
+        log.error("Not able to open the video file!")
 
         ### TODO: Read from the video capture ###
+    # global width, height, prob_threshold
+    prob_threshold = args.prob_threshold
+    width = capture.get(3)
+    height = capture.get(4)
+
+    while capture.isOpened():
+        check, frame = capture.read()
+        if not check:
+            break
 
         ### TODO: Pre-process the image as needed ###
+        image = cv2.resize(frame, (w, h))
+        image = image.transpose(2, 0, 1)
+        image = image.reshape(n, c, h, w)
 
         ### TODO: Start asynchronous inference for specified request ###
+        inference_start = time.time()
+        infer_network.exec_net(cur_request_id, image)
 
         ### TODO: Wait for the result ###
+        if infer_network.wait(cur_request_id) == 0:
+            inference_time = time.time() - inference_start
 
             ### TODO: Get the results of the inference request ###
+            result = infer_network.get_output(cur_request_id)
+
+            # if perf_counts:
+            # perf_count = infer_network.exec_net(cur_request_id)
+            # performance_counts(perf_count)
 
             ### TODO: Extract any desired stats from the results ###
+            current_count = 0
+            track_frames = {}
+            track_person = {positive_count: 0}
+            frame_count = 0
 
+            for character in result[0][0]:
+                frame_count += 1
+                if character[2] > prob_threshold:
+                    track_frames[frame_count] = character[2]
+                    start_time_not_on_video = time.time()
+                    xmin = int(character[3] * width)
+                    ymin = int(character[4] * height)
+                    xmax = int(character[5] * width)
+                    ymax = int(character[6] * height)
+                    frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 55, 255), 1)
+
+                    time_on_video = start_time_not_on_video - start_time
+                    if time_on_video > 5:
+                        if current_count > last_count and time_on_video < 0:
+                            current_count = last_count
+                        else:
+                            current_count += 1
+                    else:
+                        current_count = last_count
+
+                else:
+                    if current_count > 1:
+                        if time_on_video < 2 and time_not_on_video < 0.0005:
+                            current_count = current_count - 1
+
+                # current_count = last_count
             ### TODO: Calculate and send relevant information on ###
             ### current_count, total_count and duration to the MQTT server ###
             ### Topic "person": keys of "count" and "total" ###
             ### Topic "person/duration": key of "duration" ###
+            if current_count > last_count:
+                start_time = time.time()
+                time_not_on_video = time.time() - start_time_not_on_video
+                if last_count == 1:
+                    total_count = total_count + current_count - last_count
+                client.publish("person", json.dumps({"total": total_count}))
+
+            if current_count < last_count:
+                positive_count += 1
+                time_on_video = int(time.time() - start_time)
+                track_person[positive_count] = time_on_video
+                if current_count >= 1 and time_not_on_video > 0.0005:
+                    start_time_not_on_video = time.time()
+                    time_on_video = track_person[positive_count] + track_person[positive_count - 1]
+                client.publish("person/duration", json.dumps({"duration": time_on_video}))
+
+            client.publish("person", json.dumps({"count": current_count}))
+            last_count = current_count
+
+            cv2.putText(frame, "Inference time =  {:.2f} ms".format((inference_time * 1000)),
+                        (15, 15), cv2.FONT_HERSHEY_COMPLEX, 0.5, (200, 10, 10), 1)
+            cv2.putText(frame, "Persons in video frame = {:}".format(last_count), (15, 30),
+                        cv2.FONT_HERSHEY_COMPLEX, 0.5, (200, 10, 10), 1)
+            cv2.putText(frame, "Total count = {:}".format(total_count), (15, 45),
+                        cv2.FONT_HERSHEY_COMPLEX, 0.5, (200, 10, 10), 1)
+            cv2.putText(frame, "Time on video = {:.2f} s".format(time_on_video), (15, 60),
+                        cv2.FONT_HERSHEY_COMPLEX, 0.5, (200, 10, 10), 1)
+            cv2.putText(frame, "Time not on video = {:.6f} s".format(time_not_on_video * 1000), (15, 75),
+                        cv2.FONT_HERSHEY_COMPLEX, 0.5, (200, 10, 10), 1)
+
+            key = cv2.waitKey(6)
+            if key == ord('q'):
+                break
 
         ### TODO: Send the frame to the FFMPEG server ###
+        sys.stdout.buffer.write(frame)
+        sys.stdout.flush()
 
         ### TODO: Write an output image if `single_image_mode` ###
+        if image_mode:
+            cv2.imwrite('output.jpg', frame)
+
+        cv2.imshow('frame', frame)
+
+    capture.release()
+    cv2.destroyAllWindows()
+    client.disconnect()
+    infer_network.clean()
 
 
 def main():
@@ -123,6 +263,7 @@ def main():
 
     :return: None
     """
+    cur_request_id = 0
     # Grab command line args
     args = build_argparser().parse_args()
     # Connect to the MQTT server
