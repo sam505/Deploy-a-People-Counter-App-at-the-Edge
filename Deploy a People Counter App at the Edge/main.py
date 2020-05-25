@@ -167,10 +167,6 @@ def infer_on_stream(args, client):
             ### TODO: Get the results of the inference request ###
             result = infer_network.get_output(cur_request_id)
 
-            # if perf_counts:
-            # perf_count = infer_network.exec_net(cur_request_id)
-            # performance_counts(perf_count)
-
             ### TODO: Extract any desired stats from the results ###
             current_count = 0
             track_frames = {}
@@ -202,7 +198,6 @@ def infer_on_stream(args, client):
                         if time_on_video < 2 and time_not_on_video < 0.0005:
                             current_count = current_count - 1
 
-                # current_count = last_count
             ### TODO: Calculate and send relevant information on ###
             ### current_count, total_count and duration to the MQTT server ###
             ### Topic "person": keys of "count" and "total" ###
