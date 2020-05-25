@@ -40,17 +40,20 @@ a successful model.]
 
 In investigating potential people counter models, I tried each of the following three models:
 
-- ### Model 1 
+- ### Model 1:
 ```
 ssd_mobilenet_v2_coco_2018_03_29
 ```
-  [Model Source] 
+  [Model Source](http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v2_coco_2018_03_29.tar.gz)
   ```
   http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v2_coco_2018_03_29.tar.gz
   ```
 
 I converted the model to an Intermediate Representation with the following arguments...
-1. cd [Download directory] navigate to the download directory
+1. Navigate to the download directory
+```
+cd [Download directory]
+```
 2. Extract model file downloaded
 ```
 tar -xvf ssd_mobilenet_v2_coco_2018_03_29.tar.gz 
@@ -75,10 +78,16 @@ python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model 
 ```
 faster_rcnn_nas_coco_2018_01_28
 ```
-  - [Model Source] -http://download.tensorflow.org/models/object_detection/faster_rcnn_nas_coco_2018_01_28.tar.gz
+  - [Model Source](http://download.tensorflow.org/models/object_detection/faster_rcnn_nas_coco_2018_01_28.tar.gz)
+  ```
+  http://download.tensorflow.org/models/object_detection/faster_rcnn_nas_coco_2018_01_28.tar.gz
+  ```
 
   - I converted the model to an Intermediate Representation with the following arguments...
-1. cd [Download directory]
+1. Enter into the download directory
+```
+cd [Download directory]
+```
 2. Extract model file downloaded
 ```
 tar -xvf faster_rcnn_nas_coco_2018_01_28.tar.gz # 
@@ -87,7 +96,7 @@ tar -xvf faster_rcnn_nas_coco_2018_01_28.tar.gz #
 ```
 cd faster_rcnn_nas_coco_2018_01_28/ 
 ```
-4. Command to convert the pretrained model to Intermediate Representation
+4. Command to convert the tensorflow pretrained model to Intermediate Representation
 
 ```
 python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --tensorflow_use_custom_operations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/faster_rcnn_support.json --input_shape [1,1200,1200,3]
@@ -103,13 +112,16 @@ python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model 
 ```
 faster_rcnn_inception_v2_coco_2018_01_28.tar.gz
 ```
-  - [Model Source] 
+  - [Model Source](http://download.tensorflow.org/models/object_detection/faster_rcnn_inception_v2_coco_2018_01_28.tar.gz)
   ```
   http://download.tensorflow.org/models/object_detection/faster_rcnn_inception_v2_coco_2018_01_28.tar.gz
   ```
 
   - I converted the model to an Intermediate Representation with the following arguments...
-1. cd [Download directory]
+1. Enter into the download directory
+```
+cd [Download directory]
+```
 2. Extract model file downloaded
 ```
 tar -xvf faster_rcnn_inception_v2_coco_2018_01_28.tar.gz
@@ -118,7 +130,7 @@ tar -xvf faster_rcnn_inception_v2_coco_2018_01_28.tar.gz
 ```
 cd faster_rcnn_inception_v2_coco_2018_01_28/
 ```
-4.  Command to convert the pretrained model to Intermediate Representation
+4.  Command to convert the tensorflow pretrained model to Intermediate Representation
 ```
 python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --transformations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/faster_rcnn_support.json --input_shape [-1,600,600,3]
 ```
@@ -133,18 +145,21 @@ python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model 
 ```
 MobileNet-SSD
 ```
-  - [Model Source]
+  - [Model Source](https://codeload.github.com/chuanqi305/MobileNet-SSD)
   ```
   https://codeload.github.com/chuanqi305/MobileNet-SSD
   ```
 
   - I converted the model lsto an Intermediate Representation with the following arguments...
-1. cd [Download directory]
-2. 
+1. Enter into the download directory
+```
+cd [Download directory]
+```
+2. Enter into the model extracted folder
 ```
 cd MobileNet-SSD-master/
 ```
-3. 
+3. Command to convert the Caffe pretrained model to Intermediate Representation
 ```
 python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model mobilenet_iter_73000.caffemodel --input_proto deploy.prototxt
 ```
