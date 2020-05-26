@@ -1,4 +1,5 @@
 # Project Write-Up
+
 ![People counter app](images/Screenshot0.png)
 
 You can use this document as a template for providing your project write-up. However, if you
@@ -16,6 +17,7 @@ To successfully implement custom layers, extensions to the Model Optimizer and I
 
 The Model Optimizer extracts information from the input model such as the input and output format, topology of model layers and the model parameters. Afterwards, the model is optimized in relation to the information collected from the model and and IR files generated for the Inference Engine.
 ![](images/MO%20Custom%20Layer.png)
+
 [Model Optimizer processing steps](https://docs.openvinotoolkit.org/latest/_docs_HOWTO_Custom_Layers_Guide.html)
 
 - The Custom Layer Extractor
@@ -35,7 +37,9 @@ There are two Custom Layer Extensions for the Inference Engine, that is, the CPU
 - Custom Layer GPU Extension
 
 	Custom layer kernel for GPU Plugin requires two files. The layer description file (.xml) and the OpenCL source code(.cl) for the custom layer kernel which is compiled for execution on the GPU.
+	
 ![](images/IR%20Custom%20Layer.png)
+
 [Inference Engine basic flow](https://docs.openvinotoolkit.org/latest/_docs_HOWTO_Custom_Layers_Guide.html)
 	
 [More...](https://docs.openvinotoolkit.org/latest/_docs_HOWTO_Custom_Layers_Guide.html)
