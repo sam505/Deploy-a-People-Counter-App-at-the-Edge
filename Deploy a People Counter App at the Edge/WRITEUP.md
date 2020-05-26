@@ -1,5 +1,5 @@
 # Project Write-Up
-![](images/Screenshot0.png)
+![People counter app](images/Screenshot0.png)
 
 You can use this document as a template for providing your project write-up. However, if you
 have a different format you prefer, feel free to use it as long as you answer all required
