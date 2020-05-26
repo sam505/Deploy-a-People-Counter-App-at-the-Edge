@@ -166,7 +166,7 @@ def infer_on_stream(args, client):
 
             ### TODO: Get the results of the inference request ###
             result = infer_network.get_output(cur_request_id)
-
+            
             ### TODO: Extract any desired stats from the results ###
             current_count = 0
             track_frames = {}
@@ -203,17 +203,18 @@ def infer_on_stream(args, client):
             ### Topic "person": keys of "count" and "total" ###
             ### Topic "person/duration": key of "duration" ###
             if current_count > last_count:
+                positive_count += 1
                 start_time = time.time()
                 time_not_on_video = time.time() - start_time_not_on_video
-                if last_count == 1:
-                    total_count = total_count + current_count - last_count
+                if current_count == 1 and last_count == 0 and time_not_on_video < 0.001:
+                    if track_person[positive_count - 1] > 1 or time_on_video > 1:
+                        total_count = total_count + current_count - last_count
                 client.publish("person", json.dumps({"total": total_count}))
 
             if current_count < last_count:
-                positive_count += 1
                 time_on_video = int(time.time() - start_time)
                 track_person[positive_count] = time_on_video
-                if current_count >= 1 and time_not_on_video > 0.0005:
+                if current_count >= 1 and time_not_on_video < 0.005:
                     start_time_not_on_video = time.time()
                     time_on_video = track_person[positive_count] + track_person[positive_count - 1]
                 client.publish("person/duration", json.dumps({"duration": time_on_video}))
