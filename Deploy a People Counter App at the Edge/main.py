@@ -166,7 +166,11 @@ def infer_on_stream(args, client):
 
             ### TODO: Get the results of the inference request ###
             result = infer_network.get_output(cur_request_id)
-            
+
+            # if perf_counts:
+            # perf_count = infer_network.exec_net(cur_request_id)
+            # performance_counts(perf_count)
+
             ### TODO: Extract any desired stats from the results ###
             current_count = 0
             track_frames = {}
@@ -198,25 +202,26 @@ def infer_on_stream(args, client):
                         if time_on_video < 2 and time_not_on_video < 0.0005:
                             current_count = current_count - 1
 
+                # current_count = last_count
             ### TODO: Calculate and send relevant information on ###
             ### current_count, total_count and duration to the MQTT server ###
             ### Topic "person": keys of "count" and "total" ###
             ### Topic "person/duration": key of "duration" ###
             if current_count > last_count:
                 positive_count += 1
+                track_person[positive_count] = time_on_video
                 start_time = time.time()
                 time_not_on_video = time.time() - start_time_not_on_video
                 if current_count == 1 and last_count == 0 and time_not_on_video < 0.001:
                     if track_person[positive_count - 1] > 1 or time_on_video > 1:
                         total_count = total_count + current_count - last_count
-                client.publish("person", json.dumps({"total": total_count}))
+                        client.publish("person", json.dumps({"total": total_count}))
 
             if current_count < last_count:
+                start_time_not_on_video = time.time()
                 time_on_video = int(time.time() - start_time)
-                track_person[positive_count] = time_on_video
                 if current_count >= 1 and time_not_on_video < 0.005:
-                    start_time_not_on_video = time.time()
-                    time_on_video = track_person[positive_count] + track_person[positive_count - 1]
+                    time_on_video = track_person[positive_count] + time_on_video
                 client.publish("person/duration", json.dumps({"duration": time_on_video}))
 
             client.publish("person", json.dumps({"count": current_count}))
@@ -233,7 +238,7 @@ def infer_on_stream(args, client):
             cv2.putText(frame, "Time not on video = {:.6f} s".format(time_not_on_video * 1000), (15, 75),
                         cv2.FONT_HERSHEY_COMPLEX, 0.5, (200, 10, 10), 1)
 
-            key = cv2.waitKey(6)
+            key = cv2.waitKey(1)
             if key == ord('q'):
                 break
 
@@ -245,7 +250,7 @@ def infer_on_stream(args, client):
         if image_mode:
             cv2.imwrite('output.jpg', frame)
 
-        cv2.imshow('frame', frame)
+        # cv2.imshow('frame', frame)
 
     capture.release()
     cv2.destroyAllWindows()
