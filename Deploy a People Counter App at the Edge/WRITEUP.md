@@ -7,6 +7,34 @@ questions.
 ## Explaining Custom Layers
 
 The process behind converting custom layers involves...
+In the case where a model contains layers not included in the list of supported layers, the Model Optimizer ends up classifying these unknown layers as custom. A layer can be defined as a math function concept which is used for a defined purpose like a sigmoid, convolutional, tanh. In addition to that they are known as a building block in a neural network.
+
+Before the Model Optimizer builds a model's internal representation, optimizes it, and produce the Intermediate Representation files, it first scans for unknown layers in the input model topology. Layers in the IR files are loaded into the device plugin specified by the Inference Engine. An error is reported by the Inference Engine in the case where a topology containing unknown layers is loaded to the specified device plugin.
+
+To successfully implement custom layers, extensions to the Model Optimizer and Inference Engine should be added. For the Model Optimizer, durinf model extraction the Custom Layer Extractor(.py) should be specified. In addition to that, during Model optimization, the Custom Layer Operation(.py) extension should be specified too.
+
+The Model Optimizer extracts information from the input model such as the input and output format, topology of model layers and the model parameters. Afterwards, the model is optimized in relation to the information collected from the model and and IR files generated for the Inference Engine.
+
+- The Custom Layer Extractor
+
+	Its purpose is to extract important information from the input model
+
+- Custom Layer Operation
+
+	Specifies the attributes supported by the custom layer and computes the output shape for each instance of the custom layer and parameters.
+
+There are two Custom Layer Extensions for the Inference Engine, that is, the CPU and GPU Plugins. Implementation of custom layers is done in relation to the target device specified.
+
+- Custom Layer CPU Extension
+
+	Uses a compiled shared library(.dll binary or .so) that the CPU Plugin requires to execute the custom layers.
+
+- Custom Layer GPU Extension
+
+	Custom layer kernel for GPU Plugin requires two files. The layer description file (.xml) and the OpenCL source code(.cl) for the custom layer kernel which is compiled for execution on the GPU.
+	
+[More...](https://docs.openvinotoolkit.org/latest/_docs_HOWTO_Custom_Layers_Guide.html)
+
 
 Some of the potential reasons for handling custom layers are...
 
