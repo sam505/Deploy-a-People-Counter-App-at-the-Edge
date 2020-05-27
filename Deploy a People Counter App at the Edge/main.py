@@ -178,10 +178,12 @@ def infer_on_stream(args, client):
             frame_count = 0
 
             for character in result[0][0]:
-                frame_count += 1
                 if character[2] > prob_threshold:
+                    frame_count += 1
                     track_frames[frame_count] = character[2]
                     start_time_not_on_video = time.time()
+                    positive_count += 1
+                    track_person[positive_count] = time_on_video
                     xmin = int(character[3] * width)
                     ymin = int(character[4] * height)
                     xmax = int(character[5] * width)
@@ -189,43 +191,32 @@ def infer_on_stream(args, client):
                     frame = cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 55, 255), 1)
 
                     time_on_video = start_time_not_on_video - start_time
-                    if time_on_video > 5:
-                        if current_count > last_count and time_on_video < 0:
+                    if time_on_video > 3:
+                        if current_count > 1:
                             current_count = last_count
                         else:
                             current_count += 1
                     else:
                         current_count = last_count
 
-                else:
-                    if current_count > 1:
-                        if time_on_video < 2 and time_not_on_video < 0.0005:
-                            current_count = current_count - 1
-
-                # current_count = last_count
             ### TODO: Calculate and send relevant information on ###
             ### current_count, total_count and duration to the MQTT server ###
             ### Topic "person": keys of "count" and "total" ###
             ### Topic "person/duration": key of "duration" ###
             if current_count > last_count:
-                positive_count += 1
-                track_person[positive_count] = time_on_video
                 start_time = time.time()
                 time_not_on_video = time.time() - start_time_not_on_video
-                if current_count == 1 and last_count == 0 and time_not_on_video < 0.001:
-                    if track_person[positive_count - 1] > 1 or time_on_video > 2:
+                if current_count == 1 and last_count == 0:
+                    if time_on_video > 2:
                         total_count = total_count + current_count - last_count
-                client.publish("person", json.dumps({"total": total_count}))
 
+            client.publish("person", json.dumps({"total": total_count}))
             if current_count < last_count:
                 if current_count == 0:
                     start_time_not_on_video = time.time()
                 time_on_video = int(time.time() - start_time)
-                if current_count >= 1 and time_not_on_video < 0.005:
-                    if current_count != 0:
-                        time_on_video = time_on_video
-                    else:
-                        time_on_video = track_person[positive_count] + track_person[positive_count - 1]
+                if last_count == 0 and time_not_on_video < 0.005:
+                    time_on_video = track_person[positive_count] + time_on_video
                 client.publish("person/duration", json.dumps({"duration": time_on_video}))
 
             client.publish("person", json.dumps({"count": current_count}))
@@ -239,10 +230,10 @@ def infer_on_stream(args, client):
                         cv2.FONT_HERSHEY_COMPLEX, 0.5, (200, 10, 10), 1)
             cv2.putText(frame, "Time on video = {:.2f} s".format(time_on_video), (15, 60),
                         cv2.FONT_HERSHEY_COMPLEX, 0.5, (200, 10, 10), 1)
-            cv2.putText(frame, "Time not on video = {:.6f} s".format(time_not_on_video * 1000), (15, 75),
+            cv2.putText(frame, "Time not on video = {:.3f} s".format(time_not_on_video * 1000), (15, 75),
                         cv2.FONT_HERSHEY_COMPLEX, 0.5, (200, 10, 10), 1)
 
-            key = cv2.waitKey(1)
+            key = cv2.waitKey(15)
             if key == ord('q'):
                 break
 
