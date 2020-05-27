@@ -100,43 +100,43 @@ a successful model.]
 In investigating potential people counter models, I tried each of the following three models:
 
 - ### Model 1:
-```
-ssd_mobilenet_v2_coco_2018_03_29
-```
+	```
+	ssd_mobilenet_v2_coco_2018_03_29
+	```
   [Model Source](http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v2_coco_2018_03_29.tar.gz)
-  ```
-  http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v2_coco_2018_03_29.tar.gz
-  ```
+	  ```
+	  http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v2_coco_2018_03_29.tar.gz
+	  ```
 
-- I converted the model to an Intermediate Representation with the following arguments...
+	- I converted the model to an Intermediate Representation with the following arguments...
 
-	- 1. Navigate to the download directory
-	
-		```
-		cd [Download directory]
-		```
+		- Navigate to the download directory
 
-	- 2. Extract model file downloaded
-	
-		```
-		tar -xvf ssd_mobilenet_v2_coco_2018_03_29.tar.gz 
-		``` 
+			```
+			cd [Download directory]
+			```
 
-	- 3. Enter the folder the downloaded model was extrated to
-	
-		```
-		cd ssd_mobilenet_v2_coco_2018_03_29/
-		```
-	- 4. Command to convert the pretrained model to Intermediate Representation
-	
-		```
-		python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --tensorflow_use_custom_operations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/ssd_support.json --input_shape [1,300,300,3]
-		```
+		- Extract model file downloaded
+
+			```
+			tar -xvf ssd_mobilenet_v2_coco_2018_03_29.tar.gz 
+			``` 
+
+		- Enter the folder the downloaded model was extrated to
+
+			```
+			cd ssd_mobilenet_v2_coco_2018_03_29/
+			```
+		- Command to convert the pretrained model to Intermediate Representation
+
+			```
+			python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --tensorflow_use_custom_operations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/ssd_support.json --input_shape [1,300,300,3]
+			```
 
 
   - The model was insufficient for the app because...
   
-	- Accuracy of the model was low when detecting a person in a frame
+	- Accuracy of the model was low when detecting a person in a frame. Several bounding boxes were being drawn on one person resulting to a miscount and interfering with the time a person stays on the video.
 	
   - I tried to improve the model for the app by...
   
@@ -144,33 +144,32 @@ ssd_mobilenet_v2_coco_2018_03_29
   
   
 - ### Model 2: 
-```
-faster_rcnn_nas_coco_2018_01_28
-```
-  - [Model Source](http://download.tensorflow.org/models/object_detection/faster_rcnn_nas_coco_2018_01_28.tar.gz)
-  ```
-  http://download.tensorflow.org/models/object_detection/faster_rcnn_nas_coco_2018_01_28.tar.gz
-  ```
-
-  - I converted the model to an Intermediate Representation with the following arguments...
+	```
+	faster_rcnn_nas_coco_2018_01_28
+	```
+	- [Model Source](http://download.tensorflow.org/models/object_detection/faster_rcnn_nas_coco_2018_01_28.tar.gz)
   
-	- 1. Enter into the download directory
+	  ```
+	  http://download.tensorflow.org/models/object_detection/faster_rcnn_nas_coco_2018_01_28.tar.gz
+	  ```
+  	- I converted the model to an Intermediate Representation with the following arguments...
+  
+	- Enter into the download directory
 	
 		```
 		cd [Download directory]
-		```
-		
-	- 2. Extract model file downloaded
+		```	
+	- Extract model file downloaded
 	
 		```
 		tar -xvf faster_rcnn_nas_coco_2018_01_28.tar.gz # 
 		```
-	- 3. Enter the folder that the model file was extracted to
+	- nter the folder that the model file was extracted to
 	
 		```
 		cd faster_rcnn_nas_coco_2018_01_28/ 
 		```
-	- 4. Command to convert the tensorflow pretrained model to Intermediate Representation
+	- Command to convert the tensorflow pretrained model to Intermediate Representation
 
 		```
 		python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --tensorflow_use_custom_operations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/faster_rcnn_support.json --input_shape [1,1200,1200,3]
@@ -194,22 +193,22 @@ faster_rcnn_inception_v2_coco_2018_01_28.tar.gz
 
   - I converted the model to an Intermediate Representation with the following arguments...
   
-	- 1. Enter into the download directory
+	- Enter into the download directory
 	
 		```
 		cd [Download directory]
 		```
-	- 2. Extract model file downloaded
+	- Extract model file downloaded
 	
 		```
 		tar -xvf faster_rcnn_inception_v2_coco_2018_01_28.tar.gz
 		```
-	- 3. Enter the directory where the model has been extracted to
+	- Enter the directory where the model has been extracted to
 	
 		```
 		cd faster_rcnn_inception_v2_coco_2018_01_28/
 		```
-	- 4.  Command to convert the tensorflow pretrained model to Intermediate Representation
+	- Command to convert the tensorflow pretrained model to Intermediate Representation
 	
 		```
 		python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --transformations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/faster_rcnn_support.json --input_shape [-1,600,600,3]
@@ -235,25 +234,31 @@ MobileNet-SSD
   ```
 
   - I converted the model lsto an Intermediate Representation with the following arguments...
-1. Enter into the download directory
-```
-cd [Download directory]
-```
-2. Enter into the model extracted folder
-```
-cd MobileNet-SSD-master/
-```
-3. Command to convert the Caffe pretrained model to Intermediate Representation
-```
-python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model mobilenet_iter_73000.caffemodel --input_proto deploy.prototxt
-```
+	- Enter into the download directory
+
+		```
+		cd [Download directory]
+		```
+	- Enter into the model extracted folder
+	
+		```
+		cd MobileNet-SSD-master/
+		```
+	- Command to convert the Caffe pretrained model to Intermediate Representation
+	
+		```
+		python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model mobilenet_iter_73000.caffemodel --input_proto deploy.prototxt
+		```
 
   - The model was insufficient for the app because...
+  
   	- No accurate detections were made using the model
+	
 	- Detected not satisfied dependencies:
-	- protobuf: installed: 3.7.1, required: == 3.6.1
 
   - I tried to improve the model for the app by...
+  
+  	- I lowered the probability threshold when running the app using this model. The end result was that the model did not detect any person on the video frame. When running the app using a probability threshold of (0.8)80%, partial detections were made but were not consistent.
 
 # References
 1.  udacity/nd131-openvino-fundamentals-project-starter. GitHub. (2020). Retrieved 18 May 2020, from https://github.com/udacity/nd131-openvino-fundamentals-project-starter.
