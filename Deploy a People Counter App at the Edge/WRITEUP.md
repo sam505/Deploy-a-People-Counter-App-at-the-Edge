@@ -108,30 +108,40 @@ ssd_mobilenet_v2_coco_2018_03_29
   http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v2_coco_2018_03_29.tar.gz
   ```
 
-I converted the model to an Intermediate Representation with the following arguments...
-1. Navigate to the download directory
-```
-cd [Download directory]
-```
-2. Extract model file downloaded
-```
-tar -xvf ssd_mobilenet_v2_coco_2018_03_29.tar.gz 
-``` 
+- I converted the model to an Intermediate Representation with the following arguments...
 
-3. Enter the folder the downloaded model was extrated to
-```
-cd ssd_mobilenet_v2_coco_2018_03_29/
-```
-4. Command to convert the pretrained model to Intermediate Representation
-```
-python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --tensorflow_use_custom_operations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/ssd_support.json --input_shape [1,300,300,3]
-```
+	- 1. Navigate to the download directory
+	
+		```
+		cd [Download directory]
+		```
+
+	- 2. Extract model file downloaded
+	
+		```
+		tar -xvf ssd_mobilenet_v2_coco_2018_03_29.tar.gz 
+		``` 
+
+	- 3. Enter the folder the downloaded model was extrated to
+	
+		```
+		cd ssd_mobilenet_v2_coco_2018_03_29/
+		```
+	- 4. Command to convert the pretrained model to Intermediate Representation
+	
+		```
+		python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --tensorflow_use_custom_operations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/ssd_support.json --input_shape [1,300,300,3]
+		```
 
 
   - The model was insufficient for the app because...
-	Accuracy of the model was low when detecting a person in a frame
+  
+	- Accuracy of the model was low when detecting a person in a frame
+	
   - I tried to improve the model for the app by...
-	Lowered the value of the probability threshold but ended up detecting multiple objects that were not persons in one frame.
+  
+	- Lowered the value of the probability threshold but ended up detecting multiple objects that were not persons in one frame.
+  
   
 - ### Model 2: 
 ```
@@ -143,28 +153,34 @@ faster_rcnn_nas_coco_2018_01_28
   ```
 
   - I converted the model to an Intermediate Representation with the following arguments...
-1. Enter into the download directory
-```
-cd [Download directory]
-```
-2. Extract model file downloaded
-```
-tar -xvf faster_rcnn_nas_coco_2018_01_28.tar.gz # 
-```
-3. Enter the folder that the model file was extracted to
-```
-cd faster_rcnn_nas_coco_2018_01_28/ 
-```
-4. Command to convert the tensorflow pretrained model to Intermediate Representation
+  
+	- 1. Enter into the download directory
+	
+		```
+		cd [Download directory]
+		```
+		
+	- 2. Extract model file downloaded
+	
+		```
+		tar -xvf faster_rcnn_nas_coco_2018_01_28.tar.gz # 
+		```
+	- 3. Enter the folder that the model file was extracted to
+	
+		```
+		cd faster_rcnn_nas_coco_2018_01_28/ 
+		```
+	- 4. Command to convert the tensorflow pretrained model to Intermediate Representation
 
-```
-python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --tensorflow_use_custom_operations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/faster_rcnn_support.json --input_shape [1,1200,1200,3]
-```
-
+		```
+		python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --tensorflow_use_custom_operations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/faster_rcnn_support.json --input_shape [1,1200,1200,3]
+		```
   - The model was insufficient for the app because...
+  
   	- Network has 2 inputs overall
 
   - I tried to improve the model for the app by...
+  
   	- Co..
 
 - ### Model 3:
@@ -177,30 +193,39 @@ faster_rcnn_inception_v2_coco_2018_01_28.tar.gz
   ```
 
   - I converted the model to an Intermediate Representation with the following arguments...
-1. Enter into the download directory
-```
-cd [Download directory]
-```
-2. Extract model file downloaded
-```
-tar -xvf faster_rcnn_inception_v2_coco_2018_01_28.tar.gz
-```
-3. Enter the directory where the model has been extracted to
-```
-cd faster_rcnn_inception_v2_coco_2018_01_28/
-```
-4.  Command to convert the tensorflow pretrained model to Intermediate Representation
-```
-python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --transformations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/faster_rcnn_support.json --input_shape [-1,600,600,3]
-```
+  
+	- 1. Enter into the download directory
+	
+		```
+		cd [Download directory]
+		```
+	- 2. Extract model file downloaded
+	
+		```
+		tar -xvf faster_rcnn_inception_v2_coco_2018_01_28.tar.gz
+		```
+	- 3. Enter the directory where the model has been extracted to
+	
+		```
+		cd faster_rcnn_inception_v2_coco_2018_01_28/
+		```
+	- 4.  Command to convert the tensorflow pretrained model to Intermediate Representation
+	
+		```
+		python /opt/intel/openvino/deployment_tools/model_optimizer/mo.py --input_model frozen_inference_graph.pb --tensorflow_object_detection_api_pipeline_config pipeline.config --reverse_input_channels --transformations_config /opt/intel/openvino/deployment_tools/model_optimizer/extensions/front/tf/faster_rcnn_support.json --input_shape [-1,600,600,3]
+	```
 
   - The model was insufficient for the app because...
-1. Network has 2 inputs overall
-2. On using the model in the app, I got an error that the model only receives two input topologies
+  
+	- Network has 2 inputs overall
+	
+	- On using the model in the app, I got an error that the model only receives two input topologies
 
   - I tried to improve the model for the app by...
+  
+  	- I tried specifying the input shape and scale while converting the model to Intermediate Represntation. That was not successful 
 
-- Model 4: 
+- ### Model 4: 
 ```
 MobileNet-SSD
 ```
