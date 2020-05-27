@@ -47,6 +47,10 @@ There are two Custom Layer Extensions for the Inference Engine, that is, the CPU
 
 Some of the potential reasons for handling custom layers are...
 
+- The common reason of handling custom layers is to establish if there exists supported layers in each of the fed layers from a model. If there exists a layers not supported by the Plugin device, an alternative to creating a new custom layer is to target an additional device using the HETERO plugin. 
+
+- The Heterogeneous Plugin is therefore used to run an inference model on multiple devices allowing the unsupported layers on one device to "fallback" to run on another device (e.g., CPU) that does support those layers.
+
 ## Comparing Model Performance
 
 My method(s) to compare models before and after conversion to Intermediate Representations
@@ -62,12 +66,30 @@ The inference time of the model pre- and post-conversion was...
 
 Some of the potential use cases of the people counter app are...
 
+- A people counting app can be used in any business to keep track of the numbers of customers comming in and out of the premises. This will help the owner to keep track of the statistics of his customers.
+
+- This application can be used in a school set up to keep count of the students getting in of a classroom and in case the number does not match the expected number at a specified time, the application notifies the relevent authorities of a missing count.
+
+- This application can be implemented in a banking facility where it tracks the number of people and the time they take on an ATM. 
+
 Each of these use cases would be useful because...
+
+- The first case, will help business owners to capture all statistics related to the number of customers visiting their business. The can use this data to evaluate the days that they experience the largest number of customers or the time of the year there are most customers visiting and will eventually know whether to restock or remain with their current volume of stock in relation to the customer's statistics collected by the app.
+
+- The second case scenario would be useful to track cases where students fail to attend classes and notify the authorities to take action.
+
+- In a banking setup, collecting figures of the number of people and the time they take operating the ATM will help make informed decisions on whether to increase the number of ATMs depending on people's congestion.
 
 ## Assess Effects on End User Needs
 
 Lighting, model accuracy, and camera focal length/image size have different effects on a
 deployed edge model. The potential effects of each of these are as follows...
+
+- In low lighting the model is expected to perform poorly because of the inability to detect a perform in a dark frame. On the other hand, good lighting ensures that detections are made correctly without missing counts.
+
+- Model accuracy, expecially when it is low, may result to miscounts of persons on the frame intefering with tht e total time a person stays on the frame. A model with a high detecting accuracy will ensure that accurate detections are made giving correct figures of the total count and the total time a person stays on the video.
+
+- A camera's focal length and image size have a significant influence on the results obtained. A good image size results to a good image resolution. In result, a pre-trained model will be able to accurately detect the edges of a person in each pixel corretly.
 
 ## Model Research
 
