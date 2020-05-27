@@ -213,15 +213,19 @@ def infer_on_stream(args, client):
                 start_time = time.time()
                 time_not_on_video = time.time() - start_time_not_on_video
                 if current_count == 1 and last_count == 0 and time_not_on_video < 0.001:
-                    if track_person[positive_count - 1] > 1 or time_on_video > 1:
+                    if track_person[positive_count - 1] > 1 or time_on_video > 2:
                         total_count = total_count + current_count - last_count
-                        client.publish("person", json.dumps({"total": total_count}))
+                client.publish("person", json.dumps({"total": total_count}))
 
             if current_count < last_count:
-                start_time_not_on_video = time.time()
+                if current_count == 0:
+                    start_time_not_on_video = time.time()
                 time_on_video = int(time.time() - start_time)
                 if current_count >= 1 and time_not_on_video < 0.005:
-                    time_on_video = track_person[positive_count] + time_on_video
+                    if current_count != 0:
+                        time_on_video = time_on_video
+                    else:
+                        time_on_video = track_person[positive_count] + track_person[positive_count - 1]
                 client.publish("person/duration", json.dumps({"duration": time_on_video}))
 
             client.publish("person", json.dumps({"count": current_count}))
