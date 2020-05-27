@@ -183,7 +183,7 @@ In investigating potential people counter models, I tried each of the following 
   		- Network has 2 inputs overall
 	- I tried to improve the model for the app by...
   
-  		- Co..
+  		- I tried specifying the input shape and scale while converting the model to Intermediate Represntation. That was not successful because the model was not supported when loaded to the Inference Engine.
 
 - ### Model 3:
 
@@ -224,11 +224,11 @@ In investigating potential people counter models, I tried each of the following 
 
 		- Network has 2 inputs overall
 
-		- On using the model in the app, I got an error that the model only receives two input topologies
+		- On using the model in the app, I got an error that the model only receives two input topologies.
 
 	- I tried to improve the model for the app by...
 
-		- I tried specifying the input shape and scale while converting the model to Intermediate Represntation. That was not successful 
+		- I tried specifying the input shape and scale while converting the model to Intermediate Represntation but still contained unsupported number of inputs when loaded to the Inference Engine.
 
 - ### Model 4:
 	- Name
@@ -268,6 +268,20 @@ In investigating potential people counter models, I tried each of the following 
 	- I tried to improve the model for the app by...
 
 		- I lowered the probability threshold when running the app using this model. The end result was that the model did not detect any person on the video frame. When running the app using a probability threshold of (0.8)80%, partial detections were made but were not consistent.
+		
+- ### Model used in the app
+
+	- Name
+		
+		pedestrian-detection-adas-0002
+	- Reason
+	
+		The model has a high accuracy in detecting persons in a frame. There are minimal miscounts in comparison to all the other pretrained models and other models downloaded online and converted to IR using the model optimizer.
+	- Command used to run the app with the model
+	
+		```
+		python main.py -i resources/Pedestrian_Detect_2_1_1.mp4 -m models/pedestrian-detection-adas-0002/FP16/pedestrian-detection-adas-0002.xml -pt 0.84 | ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 15 -i - http://0.0.0.0:3004/fac.ffm
+		```
 
 # References
 1.  udacity/nd131-openvino-fundamentals-project-starter. GitHub. (2020). Retrieved 18 May 2020, from https://github.com/udacity/nd131-openvino-fundamentals-project-starter.
