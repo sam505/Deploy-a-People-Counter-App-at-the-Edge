@@ -238,7 +238,7 @@ In investigating potential people counter models, I tried each of the following 
 	- [Model Source](https://codeload.github.com/chuanqi305/MobileNet-SSD)
 	
 	  ```
-	  https://codeload.github.com/chuanqi305/MobileNet-SSD
+	  https://github.com/chuanqi305/MobileNet-SSD
 	  ```
 
 	 - I converted the model lsto an Intermediate Representation with the following arguments...
@@ -267,7 +267,7 @@ In investigating potential people counter models, I tried each of the following 
 
 	- I tried to improve the model for the app by...
 
-		- I lowered the probability threshold when running the app using this model. The end result was that the model did not detect any person on the video frame. When running the app using a probability threshold of (0.8)80%, partial detections were made but were not consistent.
+		- I lowered the probability threshold when running the app using this model. The end result was that the model did not detect any person on the video frame. When running the app using a probability threshold of (0.6)60% or the default value of 0.5, partial detections were made but were not consistent.
 		
 - ### Model used in the app
 
